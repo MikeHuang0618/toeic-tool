@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import { WORDS, WORD_LIST } from '../data/words'
+import { WORD_LIST, WORD_MAP } from '../data/words'
 import { getStat, pickWord, type Progress } from '../lib/scheduler'
-
-const WORD_MAP = new Map(WORDS.map((entry) => [entry.word, entry]))
 
 interface PracticePageProps {
   progress: Progress

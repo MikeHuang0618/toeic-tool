@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { loadProgress, saveProgress } from './storage'
+import { clearStorage, loadProgress, saveProgress } from './storage'
 import type { Progress } from './scheduler'
 
 beforeEach(() => {
@@ -27,6 +27,12 @@ describe('storage', () => {
 
   it('returns empty progress when stored data is not an object', () => {
     localStorage.setItem('toeic-progress-v1', '"a string"')
+    expect(loadProgress()).toEqual({})
+  })
+
+  it('clearStorage removes stored progress', () => {
+    saveProgress({ abandon: { weight: 16, wrongCount: 2, rightCount: 1 } })
+    clearStorage()
     expect(loadProgress()).toEqual({})
   })
 })

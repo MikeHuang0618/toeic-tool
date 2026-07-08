@@ -4,6 +4,8 @@ import {
   MAX_WEIGHT,
   MIN_WEIGHT,
   getStat,
+  markExamRight,
+  markExamWrong,
   markRight,
   markWrong,
   pickWord,
@@ -24,12 +26,31 @@ function mulberry32(seed: number): () => number {
 describe('getStat', () => {
   it('returns default stat for an unseen word', () => {
     const stat = getStat({}, 'abandon')
-    expect(stat).toEqual({ weight: INITIAL_WEIGHT, wrongCount: 0, rightCount: 0 })
+    expect(stat).toEqual({
+      weight: INITIAL_WEIGHT,
+      wrongCount: 0,
+      rightCount: 0,
+      examWrongCount: 0,
+      examRightCount: 0,
+    })
   })
 
   it('returns the stored stat for a seen word', () => {
     const progress: Progress = { abandon: { weight: 2, wrongCount: 3, rightCount: 1 } }
-    expect(getStat(progress, 'abandon')).toEqual({ weight: 2, wrongCount: 3, rightCount: 1 })
+    expect(getStat(progress, 'abandon')).toEqual({
+      weight: 2,
+      wrongCount: 3,
+      rightCount: 1,
+      examWrongCount: 0,
+      examRightCount: 0,
+    })
+  })
+
+  it('normalizes progress saved before the exam feature existed', () => {
+    const legacy: Progress = { budget: { weight: 4, wrongCount: 1, rightCount: 2 } }
+    const stat = getStat(legacy, 'budget')
+    expect(stat.examWrongCount).toBe(0)
+    expect(stat.examRightCount).toBe(0)
   })
 })
 
@@ -40,6 +61,8 @@ describe('markRight', () => {
       weight: INITIAL_WEIGHT / 2,
       wrongCount: 0,
       rightCount: 1,
+      examWrongCount: 0,
+      examRightCount: 0,
     })
   })
 
@@ -64,6 +87,8 @@ describe('markWrong', () => {
       weight: INITIAL_WEIGHT * 2,
       wrongCount: 1,
       rightCount: 0,
+      examWrongCount: 0,
+      examRightCount: 0,
     })
   })
 
@@ -72,6 +97,48 @@ describe('markWrong', () => {
     for (let i = 0; i < 10; i++) progress = markWrong(progress, 'invoice')
     expect(getStat(progress, 'invoice').weight).toBe(MAX_WEIGHT)
     expect(getStat(progress, 'invoice').wrongCount).toBe(10)
+  })
+})
+
+describe('markExamRight', () => {
+  it('halves the weight and increments only examRightCount', () => {
+    const progress: Progress = { ledger: { weight: 8, wrongCount: 2, rightCount: 1 } }
+    const next = markExamRight(progress, 'ledger')
+    expect(getStat(next, 'ledger')).toEqual({
+      weight: 4,
+      wrongCount: 2,
+      rightCount: 1,
+      examWrongCount: 0,
+      examRightCount: 1,
+    })
+  })
+
+  it('does not lower the weight below MIN_WEIGHT', () => {
+    let progress: Progress = {}
+    for (let i = 0; i < 10; i++) progress = markExamRight(progress, 'ledger')
+    expect(getStat(progress, 'ledger').weight).toBe(MIN_WEIGHT)
+    expect(getStat(progress, 'ledger').examRightCount).toBe(10)
+  })
+})
+
+describe('markExamWrong', () => {
+  it('doubles the weight and increments only examWrongCount', () => {
+    const progress: Progress = { ledger: { weight: 8, wrongCount: 2, rightCount: 1 } }
+    const next = markExamWrong(progress, 'ledger')
+    expect(getStat(next, 'ledger')).toEqual({
+      weight: 16,
+      wrongCount: 2,
+      rightCount: 1,
+      examWrongCount: 1,
+      examRightCount: 0,
+    })
+  })
+
+  it('does not raise the weight above MAX_WEIGHT', () => {
+    let progress: Progress = {}
+    for (let i = 0; i < 10; i++) progress = markExamWrong(progress, 'ledger')
+    expect(getStat(progress, 'ledger').weight).toBe(MAX_WEIGHT)
+    expect(getStat(progress, 'ledger').examWrongCount).toBe(10)
   })
 })
 

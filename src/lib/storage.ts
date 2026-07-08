@@ -21,3 +21,11 @@ export function saveProgress(progress: Progress): void {
     // Storage full or unavailable (e.g. private mode) — practice still works in memory.
   }
 }
+
+export function clearStorage(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // Ignore errors
+  }
+}

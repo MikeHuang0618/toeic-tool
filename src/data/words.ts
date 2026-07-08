@@ -25,3 +25,7 @@ export const WORDS: WordEntry[] = [
 ].sort((a, b) => a.word.localeCompare(b.word, 'en'))
 
 export const WORD_LIST: string[] = WORDS.map((entry) => entry.word)
+
+export const WORD_MAP: ReadonlyMap<string, WordEntry> = new Map(
+  WORDS.map((entry) => [entry.word, entry]),
+)
