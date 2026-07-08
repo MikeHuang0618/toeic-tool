@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { WORDS, type WordEntry } from '../data/words'
 import { getStat, type Progress } from '../lib/scheduler'
@@ -23,6 +23,39 @@ const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 export function DictionaryPage({ progress, isActive = true }: DictionaryPageProps) {
   const [query, setQuery] = useState('')
+  const [isSearchHidden, setIsSearchHidden] = useState(false)
+  const lastScrollY = useRef(0)
+  const scrollUpAccumulator = useRef(0)
+
+  useEffect(() => {
+    if (!isActive) return
+
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement
+      if (target && target.classList && target.classList.contains('page-slide')) {
+        const currentScrollY = target.scrollTop
+        if (currentScrollY <= 10) {
+          setIsSearchHidden(false)
+          scrollUpAccumulator.current = 0
+        } else {
+          const delta = currentScrollY - lastScrollY.current
+          if (delta > 0) {
+            setIsSearchHidden(true)
+            scrollUpAccumulator.current = 0
+          } else if (delta < 0) {
+            scrollUpAccumulator.current += Math.abs(delta)
+            if (scrollUpAccumulator.current > 20) {
+              setIsSearchHidden(false)
+            }
+          }
+        }
+        lastScrollY.current = currentScrollY
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { capture: true, passive: true })
+    return () => window.removeEventListener('scroll', handleScroll, { capture: true })
+  }, [isActive])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -65,13 +98,13 @@ export function DictionaryPage({ progress, isActive = true }: DictionaryPageProp
       <header className="page-header">
         <h1>字典</h1>
       </header>
-      <div className="dict-search-wrap">
+      <div className={`dict-search-wrap ${isSearchHidden ? 'hidden' : ''}`}>
         <input
           type="search"
           className="dict-search"
           placeholder={`搜尋 ${WORDS.length} 個單字或中文`}
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
           aria-label="搜尋單字"
         />
       </div>
