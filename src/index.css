@@ -322,3 +322,76 @@ button {
   background: var(--accent);
   color: #ffffff;
 }
+
+/* ---------- 統計頁 ---------- */
+
+.stats-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stats-item {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.stats-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats-word {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.stats-pos {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.stats-zh {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.stats-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.metric-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.metric-badge.weight {
+  background: rgba(255, 149, 0, 0.15);
+  color: #ff9500;
+}
+
+.metric-badge.wrong {
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+.metric-badge.right {
+  background: var(--green-bg);
+  color: var(--green);
+}
+

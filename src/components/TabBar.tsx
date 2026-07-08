@@ -1,4 +1,4 @@
-export type Tab = 'practice' | 'dictionary'
+export type Tab = 'practice' | 'dictionary' | 'stats'
 
 interface TabBarProps {
   active: Tab
@@ -23,6 +23,17 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H19v17H7.5A2.5 2.5 0 0 0 5 21.5z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
         <path d="M5 19a2.5 2.5 0 0 1 2.5-2.5H19" fill="none" stroke="currentColor" strokeWidth="2" />
+      </svg>
+    ),
+  },
+  {
+    id: 'stats',
+    label: '統計',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4" y="14" width="4" height="6" rx="1" fill="none" stroke="currentColor" strokeWidth="2" />
+        <rect x="10" y="9" width="4" height="11" rx="1" fill="none" stroke="currentColor" strokeWidth="2" />
+        <rect x="16" y="4" width="4" height="16" rx="1" fill="none" stroke="currentColor" strokeWidth="2" />
       </svg>
     ),
   },
