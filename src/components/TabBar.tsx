@@ -65,6 +65,7 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
 export function TabBar({ active, onChange }: TabBarProps) {
   const navRef = useRef<HTMLElement>(null)
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 })
+  const [jellyTab, setJellyTab] = useState<Tab | null>(null)
 
   useEffect(() => {
     const nav = navRef.current
@@ -87,7 +88,12 @@ export function TabBar({ active, onChange }: TabBarProps) {
         <button
           key={tab.id}
           type="button"
-          onClick={() => onChange(tab.id)}
+          className={jellyTab === tab.id ? 'jelly' : undefined}
+          onClick={() => {
+            onChange(tab.id)
+            setJellyTab(tab.id)
+          }}
+          onAnimationEnd={() => setJellyTab((t) => (t === tab.id ? null : t))}
           aria-current={active === tab.id ? 'page' : undefined}
         >
           {tab.icon}
