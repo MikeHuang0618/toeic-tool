@@ -356,7 +356,7 @@ button {
 }
 
 .tabbar.shrunk {
-  transform: translateX(-50%) scale(0.8);
+  transform: translateX(-50%) scale(0.9);
   opacity: 0.95;
 }
 
