@@ -21,7 +21,7 @@ function groupByLetter(entries: WordEntry[]): Map<string, WordEntry[]> {
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
-export function DictionaryPage({ progress, isActive = false }: DictionaryPageProps) {
+export function DictionaryPage({ progress, isActive = true }: DictionaryPageProps) {
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
