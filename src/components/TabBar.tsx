@@ -66,6 +66,7 @@ export function TabBar({ active, onChange }: TabBarProps) {
   const navRef = useRef<HTMLElement>(null)
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 })
   const [jellyTab, setJellyTab] = useState<Tab | null>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     const nav = navRef.current
@@ -81,8 +82,39 @@ export function TabBar({ active, onChange }: TabBarProps) {
     return () => window.removeEventListener('resize', update)
   }, [active])
 
+  const lastScrollY = useRef(0)
+  const scrollUpAccumulator = useRef(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      
+      if (currentScrollY <= 10) {
+        setIsScrolled(false)
+        scrollUpAccumulator.current = 0
+      } else {
+        const delta = currentScrollY - lastScrollY.current
+        if (delta > 0) {
+          setIsScrolled(true)
+          scrollUpAccumulator.current = 0
+        } else if (delta < 0) {
+          scrollUpAccumulator.current += Math.abs(delta)
+          if (scrollUpAccumulator.current > 20) {
+            setIsScrolled(false)
+          }
+        }
+      }
+      lastScrollY.current = currentScrollY
+    }
+    
+    lastScrollY.current = window.scrollY
+    
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
-    <nav className="tabbar" ref={navRef} aria-label="主選單">
+    <nav className={`tabbar ${isScrolled ? 'shrunk' : ''}`} ref={navRef} aria-label="主選單">
       <div className="tabbar-indicator" style={indicatorStyle} aria-hidden="true" />
       {TABS.map((tab) => (
         <button
