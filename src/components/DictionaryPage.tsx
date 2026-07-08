@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { WORDS, type WordEntry } from '../data/words'
 import { getStat, type Progress } from '../lib/scheduler'
 
@@ -17,6 +18,8 @@ function groupByLetter(entries: WordEntry[]): Map<string, WordEntry[]> {
   return groups
 }
 
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
 export function DictionaryPage({ progress }: DictionaryPageProps) {
   const [query, setQuery] = useState('')
 
@@ -32,6 +35,27 @@ export function DictionaryPage({ progress }: DictionaryPageProps) {
 
   const jumpTo = (letter: string) => {
     document.getElementById(`dict-${letter}`)?.scrollIntoView({ block: 'start' })
+  }
+
+  const lastTouchedLetterRef = useRef<string | null>(null)
+
+  const handleTouch = (e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    const target = document.elementFromPoint(touch.clientX, touch.clientY)
+    if (target && target.tagName === 'BUTTON') {
+      const letter = target.textContent
+      if (letter && ALPHABET.includes(letter) && letter !== lastTouchedLetterRef.current) {
+        lastTouchedLetterRef.current = letter
+        const hasWords = groups.has(letter)
+        if (hasWords) {
+          jumpTo(letter)
+        }
+      }
+    }
+  }
+
+  const handleTouchEnd = () => {
+    lastTouchedLetterRef.current = null
   }
 
   return (
@@ -80,14 +104,29 @@ export function DictionaryPage({ progress }: DictionaryPageProps) {
         ))
       )}
 
-      {!query.trim() && (
-        <nav className="letter-rail" aria-label="字母索引">
-          {[...groups.keys()].map((letter) => (
-            <button key={letter} type="button" onClick={() => jumpTo(letter)}>
-              {letter}
-            </button>
-          ))}
-        </nav>
+      {!query.trim() && createPortal(
+        <nav
+          className="letter-rail"
+          aria-label="字母索引"
+          onTouchStart={handleTouch}
+          onTouchMove={handleTouch}
+          onTouchEnd={handleTouchEnd}
+        >
+          {ALPHABET.map((letter) => {
+            const hasWords = groups.has(letter)
+            return (
+              <button
+                key={letter}
+                type="button"
+                disabled={!hasWords}
+                onClick={() => hasWords && jumpTo(letter)}
+              >
+                {letter}
+              </button>
+            )
+          })}
+        </nav>,
+        document.body
       )}
     </div>
   )

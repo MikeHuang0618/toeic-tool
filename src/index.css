@@ -40,6 +40,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Noto Sans TC',
@@ -302,6 +306,15 @@ button {
   display: flex;
   flex-direction: column;
   z-index: 5;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (min-width: 600px) {
+  .letter-rail {
+    right: calc(50% - 280px + 6px);
+  }
 }
 
 .letter-rail button {
@@ -311,6 +324,12 @@ button {
   font-size: 11px;
   font-weight: 700;
   padding: 0.5px 6px;
+}
+
+.letter-rail button:disabled {
+  color: var(--text-secondary);
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 /* ---------- 底部懸浮 TabBar ---------- */
