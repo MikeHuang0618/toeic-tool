@@ -337,10 +337,10 @@ button {
 .tabbar {
   position: fixed;
   left: 50%;
-  transform: translateX(-50%) scale(0.9);
-  bottom: calc(env(safe-area-inset-bottom, 10px) - 4px);
+  transform: translateX(-50%);
+  bottom: max(6px, calc(env(safe-area-inset-bottom, 0px) - 12px));
   display: flex;
-  width: min(430px, calc(100vw - 24px));
+  width: min(460px, calc(100vw - 16px));
   padding: 5px;
   border-radius: 999px;
   background: var(--tabbar-bg);
@@ -356,7 +356,7 @@ button {
 }
 
 .tabbar.shrunk {
-  transform: translateX(-50%) scale(0.72);
+  transform: translateX(-50%) scale(0.8);
   opacity: 0.95;
 }
 
