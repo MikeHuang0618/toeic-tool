@@ -13,10 +13,7 @@ export function StatsPage({ progress }: StatsPageProps) {
 
   const rows = useMemo(() => {
     const filtered = WORDS.map((entry) => ({ entry, stat: getStat(progress, entry.word) })).filter(
-      ({ stat }) =>
-        activeTab === 'practice'
-          ? stat.rightCount > 0 || stat.wrongCount > 0
-          : stat.examRightCount > 0 || stat.examWrongCount > 0,
+      ({ stat }) => (activeTab === 'practice' ? stat.wrongCount > 0 : stat.examWrongCount > 0),
     )
     filtered.sort((a, b) => {
       const wrongDiff =
@@ -32,7 +29,7 @@ export function StatsPage({ progress }: StatsPageProps) {
     <div className="stats">
       <header className="page-header">
         <h1>統計</h1>
-        <p className="page-subtitle">依答錯次數排序的弱點單字</p>
+        <p className="page-subtitle">答錯過的單字，依次數排序</p>
       </header>
 
       <div className="stats-tabs">
@@ -55,8 +52,8 @@ export function StatsPage({ progress }: StatsPageProps) {
       {rows.length === 0 ? (
         <p className="empty-state">
           {activeTab === 'practice'
-            ? '還沒有練習紀錄——去「練習」頁答幾題再回來看弱點。'
-            : '還沒有考試紀錄——去「考試」頁挑戰一回再回來看結果。'}
+            ? '目前沒有練錯的單字——答錯的字會出現在這裡。'
+            : '目前沒有考錯的單字——考試答錯的字會出現在這裡。'}
         </p>
       ) : (
         <ul className="stats-list">

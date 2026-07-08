@@ -15,10 +15,21 @@ describe('StatsPage', () => {
     // Switching to the exam tab with no exam records must keep the tabs
     // visible so the user can switch back.
     await user.click(screen.getByRole('button', { name: '考試' }))
-    expect(screen.getByText(/還沒有考試紀錄/)).toBeInTheDocument()
+    expect(screen.getByText(/沒有考錯的單字/)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: '練習' }))
     expect(screen.getByText('abandon')).toBeInTheDocument()
+  })
+
+  it('hides words that were only ever answered correctly', () => {
+    const progress: Progress = {
+      abandon: { weight: 1, wrongCount: 0, rightCount: 5 },
+      budget: { weight: 16, wrongCount: 2, rightCount: 0 },
+    }
+    render(<StatsPage progress={progress} />)
+
+    expect(screen.getByText('budget')).toBeInTheDocument()
+    expect(screen.queryByText('abandon')).not.toBeInTheDocument()
   })
 
   it('sorts practice stats by wrong count, then weight', () => {

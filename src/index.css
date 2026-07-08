@@ -10,8 +10,10 @@
   --red: #ff3b30;
   --red-bg: rgba(255, 59, 48, 0.12);
   --accent: #0a84ff;
-  --tabbar-bg: rgba(255, 255, 255, 0.65);
-  --tabbar-border: rgba(0, 0, 0, 0.1);
+  --tabbar-bg: rgba(255, 255, 255, 0.5);
+  --tabbar-border: rgba(0, 0, 0, 0.08);
+  --tabbar-shadow: 0 20px 40px rgba(0, 0, 0, 0.22), 0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.7);
   --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
@@ -24,8 +26,10 @@
     --separator: rgba(84, 84, 88, 0.5);
     --green-bg: rgba(52, 199, 89, 0.2);
     --red-bg: rgba(255, 59, 48, 0.2);
-    --tabbar-bg: rgba(28, 28, 30, 0.65);
-    --tabbar-border: rgba(255, 255, 255, 0.15);
+    --tabbar-bg: rgba(30, 30, 32, 0.5);
+    --tabbar-border: rgba(255, 255, 255, 0.14);
+    --tabbar-shadow: 0 20px 40px rgba(0, 0, 0, 0.75), 0 4px 12px rgba(0, 0, 0, 0.4),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.12);
     --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   }
 }
@@ -320,9 +324,9 @@ button {
   border-radius: 999px;
   background: var(--tabbar-bg);
   border: 0.5px solid var(--tabbar-border);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  box-shadow: var(--shadow);
+  backdrop-filter: blur(36px) saturate(200%);
+  -webkit-backdrop-filter: blur(36px) saturate(200%);
+  box-shadow: var(--tabbar-shadow);
   z-index: 10;
 }
 
@@ -657,11 +661,11 @@ button {
   color: #ff9500;
 }
 
-.missed-words-section {
+.exam-review {
   width: 100%;
 }
 
-.missed-words-section h2 {
+.exam-review h2 {
   font-size: 16px;
   color: var(--text-secondary);
   margin-bottom: 12px;

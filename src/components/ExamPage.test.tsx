@@ -27,10 +27,11 @@ describe('ExamPage', () => {
     expect(onAnswer).toHaveBeenCalledTimes(10)
     expect(onAnswer).toHaveBeenLastCalledWith(expect.any(String), true)
     expect(screen.getByText('結算')).toBeInTheDocument()
-    expect(screen.queryByText(/本次答錯/)).not.toBeInTheDocument()
+    expect(screen.getByText('10/10')).toBeInTheDocument()
+    expect(screen.getAllByText('✓ 記得')).toHaveLength(10)
   })
 
-  it('lists missed words in the summary and can restart', async () => {
+  it('reviews every question with its right/wrong mark and can restart', async () => {
     const user = userEvent.setup()
     render(<ExamPage progress={{}} onAnswer={() => {}} />)
 
@@ -43,8 +44,14 @@ describe('ExamPage', () => {
       await user.click(screen.getByRole('button', { name: '記得' }))
     }
 
-    expect(screen.getByText('本次答錯（1 字）')).toBeInTheDocument()
-    expect(screen.getByText(new RegExp(`^${missed}\\s*$`, 'm'))).toBeInTheDocument()
+    expect(screen.getByText('全部題目')).toBeInTheDocument()
+    expect(screen.getByText('9/10')).toBeInTheDocument()
+    expect(screen.getAllByText('✓ 記得')).toHaveLength(9)
+    expect(screen.getAllByText('✗ 不記得')).toHaveLength(1)
+    // The missed word is the first row and carries the wrong mark.
+    const firstRow = screen.getAllByRole('listitem')[0]
+    expect(firstRow.textContent).toContain(missed)
+    expect(firstRow.textContent).toContain('✗ 不記得')
 
     await user.click(screen.getByRole('button', { name: '再次挑戰' }))
     expect(screen.getByRole('button', { name: '開始挑戰' })).toBeInTheDocument()

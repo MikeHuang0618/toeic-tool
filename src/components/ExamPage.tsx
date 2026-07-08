@@ -9,6 +9,11 @@ interface ExamPageProps {
 
 type ExamState = 'setup' | 'playing' | 'summary'
 
+interface QuestionResult {
+  word: string
+  remembered: boolean
+}
+
 function comboMultiplier(combo: number): number {
   if (combo >= 20) return 2.0
   if (combo >= 10) return 1.5
@@ -25,7 +30,7 @@ export function ExamPage({ progress, onAnswer }: ExamPageProps) {
   const [score, setScore] = useState(0)
   const [combo, setCombo] = useState(0)
   const [maxCombo, setMaxCombo] = useState(0)
-  const [missedWords, setMissedWords] = useState<string[]>([])
+  const [results, setResults] = useState<QuestionResult[]>([])
   const [popText, setPopText] = useState<{ text: string; id: number } | null>(null)
 
   const startExam = () => {
@@ -43,7 +48,7 @@ export function ExamPage({ progress, onAnswer }: ExamPageProps) {
     setScore(0)
     setCombo(0)
     setMaxCombo(0)
-    setMissedWords([])
+    setResults([])
     setPopText(null)
     setState('playing')
   }
@@ -53,6 +58,7 @@ export function ExamPage({ progress, onAnswer }: ExamPageProps) {
     const stat = getStat(progress, word)
 
     onAnswer(word, remembered)
+    setResults((prev) => [...prev, { word, remembered }])
 
     if (remembered) {
       const newCombo = combo + 1
@@ -63,7 +69,6 @@ export function ExamPage({ progress, onAnswer }: ExamPageProps) {
       setPopText({ text: `+${earned}`, id: Date.now() })
     } else {
       setCombo(0)
-      setMissedWords((prev) => (prev.includes(word) ? prev : [...prev, word]))
       setPopText({ text: 'Combo Break!', id: Date.now() })
     }
 
@@ -104,16 +109,23 @@ export function ExamPage({ progress, onAnswer }: ExamPageProps) {
   }
 
   if (state === 'summary') {
+    const rightTotal = results.filter((r) => r.remembered).length
     return (
       <div className="exam-summary">
         <header className="page-header">
           <h1>結算</h1>
-          <p className="page-subtitle">共 {questions.length} 題</p>
+          <p className="page-subtitle">共 {results.length} 題</p>
         </header>
         <div className="summary-card">
           <div className="summary-score">
             <span className="summary-label">總分</span>
             <span className="summary-value">{score.toLocaleString()}</span>
+          </div>
+          <div className="summary-score">
+            <span className="summary-label">答對</span>
+            <span className="summary-value">
+              {rightTotal}/{results.length}
+            </span>
           </div>
           <div className="summary-combo">
             <span className="summary-label">最大連擊</span>
@@ -121,26 +133,29 @@ export function ExamPage({ progress, onAnswer }: ExamPageProps) {
           </div>
         </div>
 
-        {missedWords.length > 0 && (
-          <section className="missed-words-section">
-            <h2>本次答錯（{missedWords.length} 字）</h2>
-            <ul className="stats-list">
-              {missedWords.map((word) => {
-                const entry = WORD_MAP.get(word)!
-                return (
-                  <li key={word} className="stats-item">
-                    <div className="stats-main">
-                      <span className="stats-word">
-                        {entry.word} <span className="stats-pos">{entry.pos}</span>
-                      </span>
-                      <span className="stats-zh">{entry.zh}</span>
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
-          </section>
-        )}
+        <section className="exam-review">
+          <h2>全部題目</h2>
+          <ul className="stats-list">
+            {results.map(({ word, remembered }, index) => {
+              const entry = WORD_MAP.get(word)!
+              return (
+                <li key={`${word}-${index}`} className="stats-item">
+                  <div className="stats-main">
+                    <span className="stats-word">
+                      {entry.word} <span className="stats-pos">{entry.pos}</span>
+                    </span>
+                    <span className="stats-zh">{entry.zh}</span>
+                  </div>
+                  {remembered ? (
+                    <span className="metric-badge right">✓ 記得</span>
+                  ) : (
+                    <span className="metric-badge wrong">✗ 不記得</span>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        </section>
 
         <button type="button" className="start-btn mt-4" onClick={() => setState('setup')}>
           再次挑戰
