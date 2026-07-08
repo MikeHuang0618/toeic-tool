@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { TabBar, type Tab } from './components/TabBar'
 import { PracticePage } from './components/PracticePage'
 import { DictionaryPage } from './components/DictionaryPage'
@@ -12,8 +12,9 @@ const TABS_ORDER: Tab[] = ['practice', 'exam', 'dictionary', 'stats', 'settings'
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('practice')
-  const [prevTab, setPrevTab] = useState<Tab>('practice')
   const [progress, setProgress] = useState<Progress>(loadProgress)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const handleAnswer = (word: string, remembered: boolean) => {
     setProgress((prev) => {
@@ -36,79 +37,80 @@ export default function App() {
     setProgress({})
   }
 
-  const handleTabChange = (newTab: Tab) => {
-    if (newTab === tab) return
-    setPrevTab(tab)
-    setTab(newTab)
-  }
-
-  // Touch swipe gesture navigation
-  const touchStartX = useRef(0)
-  const touchStartY = useRef(0)
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX
-    touchStartY.current = e.touches[0].clientY
-  }
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    const target = e.target as HTMLElement
-    if (
-      target.tagName === 'INPUT' ||
-      target.tagName === 'TEXTAREA' ||
-      target.isContentEditable ||
-      target.closest('.exam-slider')
-    ) {
-      return
-    }
-
-    const diffX = e.changedTouches[0].clientX - touchStartX.current
-    const diffY = e.changedTouches[0].clientY - touchStartY.current
-
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
-      const currentIndex = TABS_ORDER.indexOf(tab)
-      if (diffX < 0) {
-        if (currentIndex < TABS_ORDER.length - 1) {
-          handleTabChange(TABS_ORDER[currentIndex + 1])
+  const handleTabChange = (newTab: Tab, options?: { smooth?: boolean }) => {
+    const targetIndex = TABS_ORDER.indexOf(newTab)
+    const container = scrollContainerRef.current
+    if (container) {
+      const width = container.offsetWidth
+      if (width > 0) {
+        const isSmooth = options?.smooth !== false
+        if (!isSmooth) {
+          setScrollProgress(targetIndex)
         }
-      } else {
-        if (currentIndex > 0) {
-          handleTabChange(TABS_ORDER[currentIndex - 1])
-        }
+        setTab(newTab)
+        container.scrollTo({
+          left: targetIndex * width,
+          behavior: isSmooth ? 'smooth' : 'auto'
+        })
       }
     }
   }
 
-  const tabIndex = TABS_ORDER.indexOf(tab)
-  const prevIndex = TABS_ORDER.indexOf(prevTab)
-  const animClass = tabIndex >= prevIndex ? 'slide-from-right' : 'slide-from-left'
+  const handleScroll = () => {
+    const container = scrollContainerRef.current
+    if (!container) return
+    const width = container.offsetWidth
+    if (width === 0) return
+    const currentProgress = container.scrollLeft / width
+    setScrollProgress(currentProgress)
+
+    const roundedIndex = Math.round(currentProgress)
+    const nextTab = TABS_ORDER[roundedIndex]
+    if (nextTab && nextTab !== tab) {
+      setTab(nextTab)
+    }
+  }
+
+  // Set initial scroll offset once the container mounts
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (container) {
+      const index = TABS_ORDER.indexOf('practice')
+      container.scrollLeft = index * container.offsetWidth
+      setScrollProgress(index)
+    }
+  }, [])
 
   return (
     <>
-      <main
-        className="page"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div key={tab} className={`page-transition-wrap ${animClass}`}>
-          {tab === 'practice' && (
-            <PracticePage progress={progress} onAnswer={handleAnswer} />
-          )}
-          {tab === 'exam' && (
-            <ExamPage progress={progress} onAnswer={handleExamAnswer} />
-          )}
-          {tab === 'dictionary' && (
-            <DictionaryPage progress={progress} />
-          )}
-          {tab === 'stats' && (
-            <StatsPage progress={progress} />
-          )}
-          {tab === 'settings' && (
-            <SettingsPage onClear={handleClearProgress} />
-          )}
+      <main className="page">
+        <div
+          className="page-scroll-container"
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+        >
+          {TABS_ORDER.map((tabId) => (
+            <div key={tabId} className="page-slide" data-tab-id={tabId}>
+              {tabId === 'practice' && (
+                <PracticePage progress={progress} onAnswer={handleAnswer} />
+              )}
+              {tabId === 'exam' && (
+                <ExamPage progress={progress} onAnswer={handleExamAnswer} />
+              )}
+              {tabId === 'dictionary' && (
+                <DictionaryPage progress={progress} />
+              )}
+              {tabId === 'stats' && (
+                <StatsPage progress={progress} />
+              )}
+              {tabId === 'settings' && (
+                <SettingsPage onClear={handleClearProgress} />
+              )}
+            </div>
+          ))}
         </div>
       </main>
-      <TabBar active={tab} onChange={handleTabChange} />
+      <TabBar active={tab} onChange={handleTabChange} progress={scrollProgress} />
     </>
   )
 }
