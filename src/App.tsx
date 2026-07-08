@@ -98,7 +98,7 @@ export default function App() {
                 <ExamPage progress={progress} onAnswer={handleExamAnswer} />
               )}
               {tabId === 'dictionary' && (
-                <DictionaryPage progress={progress} />
+                <DictionaryPage progress={progress} isActive={tab === 'dictionary'} />
               )}
               {tabId === 'stats' && (
                 <StatsPage progress={progress} />

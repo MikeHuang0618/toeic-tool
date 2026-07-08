@@ -5,6 +5,7 @@ import { getStat, type Progress } from '../lib/scheduler'
 
 interface DictionaryPageProps {
   progress: Progress
+  isActive?: boolean
 }
 
 function groupByLetter(entries: WordEntry[]): Map<string, WordEntry[]> {
@@ -20,7 +21,7 @@ function groupByLetter(entries: WordEntry[]): Map<string, WordEntry[]> {
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
-export function DictionaryPage({ progress }: DictionaryPageProps) {
+export function DictionaryPage({ progress, isActive = false }: DictionaryPageProps) {
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
@@ -105,7 +106,7 @@ export function DictionaryPage({ progress }: DictionaryPageProps) {
         ))
       )}
 
-      {!query.trim() && createPortal(
+      {!query.trim() && isActive && createPortal(
         <nav
           className="letter-rail"
           aria-label="字母索引"
