@@ -40,6 +40,7 @@ export function DictionaryPage({ progress }: DictionaryPageProps) {
   const lastTouchedLetterRef = useRef<string | null>(null)
 
   const handleTouch = (e: React.TouchEvent) => {
+    e.stopPropagation()
     const touch = e.touches[0]
     const target = document.elementFromPoint(touch.clientX, touch.clientY)
     if (target && target.tagName === 'BUTTON') {

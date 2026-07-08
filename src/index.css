@@ -67,19 +67,34 @@ button {
     calc(env(safe-area-inset-bottom, 0px) + 120px);
 }
 
-@keyframes pageFadeIn {
+@keyframes slideFromRight {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.99);
+    transform: translateX(30px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(0);
   }
 }
 
-.page > * {
-  animation: pageFadeIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.page-transition-wrap.slide-from-right {
+  animation: slideFromRight 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.page-transition-wrap.slide-from-left {
+  animation: slideFromLeft 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

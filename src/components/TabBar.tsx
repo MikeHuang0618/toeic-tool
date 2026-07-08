@@ -113,12 +113,41 @@ export function TabBar({ active, onChange }: TabBarProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const lastTouchedTabRef = useRef<Tab | null>(null)
+
+  const handleTouch = (e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    const target = document.elementFromPoint(touch.clientX, touch.clientY)
+    if (target) {
+      const button = target.closest('button[data-tab-id]')
+      if (button) {
+        const tabId = button.getAttribute('data-tab-id') as Tab
+        if (tabId && tabId !== lastTouchedTabRef.current) {
+          lastTouchedTabRef.current = tabId
+          onChange(tabId)
+        }
+      }
+    }
+  }
+
+  const handleTouchEnd = () => {
+    lastTouchedTabRef.current = null
+  }
+
   return (
-    <nav className={`tabbar ${isScrolled ? 'shrunk' : ''}`} ref={navRef} aria-label="主選單">
+    <nav
+      className={`tabbar ${isScrolled ? 'shrunk' : ''}`}
+      ref={navRef}
+      aria-label="主選單"
+      onTouchStart={handleTouch}
+      onTouchMove={handleTouch}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="tabbar-indicator" style={indicatorStyle} aria-hidden="true" />
       {TABS.map((tab) => (
         <button
           key={tab.id}
+          data-tab-id={tab.id}
           type="button"
           className={jellyTab === tab.id ? 'jelly' : undefined}
           onClick={() => {
