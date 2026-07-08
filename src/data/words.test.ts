@@ -3,7 +3,7 @@ import { WORDS } from './words'
 
 describe('word data', () => {
   it('contains a substantial word list', () => {
-    expect(WORDS.length).toBeGreaterThanOrEqual(800)
+    expect(WORDS.length).toBeGreaterThanOrEqual(1300)
   })
 
   it('has no duplicate words', () => {
