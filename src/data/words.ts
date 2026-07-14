@@ -11,6 +11,8 @@ export interface WordEntry {
   word: string
   pos: string
   zh: string
+  /** KK 音標；由 scripts/generate-kk.mjs 產生。 */
+  kk?: string
 }
 
 export const WORDS: WordEntry[] = [

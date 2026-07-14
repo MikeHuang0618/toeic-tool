@@ -124,6 +124,7 @@ export function DictionaryPage({ progress, isActive = true }: DictionaryPageProp
                       <span className="dict-word">
                         {entry.word} <span className="dict-pos">{entry.pos}</span>
                       </span>
+                      {entry.kk && <span className="dict-kk">[{entry.kk}]</span>}
                       <span className="dict-zh">{entry.zh}</span>
                     </div>
                     {wrongCount > 0 && (

@@ -76,6 +76,7 @@ export function PracticePage({ progress, onAnswer }: PracticePageProps) {
         <span className="word-text" data-testid="practice-word">
           {current}
         </span>
+        {entry.kk && <span className="word-kk">[{entry.kk}]</span>}
         {revealed ? (
           <span className="word-zh">{entry.zh}</span>
         ) : (

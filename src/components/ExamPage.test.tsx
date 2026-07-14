@@ -53,6 +53,17 @@ describe('ExamPage', () => {
     expect(screen.queryByRole('button', { name: '記得' })).not.toBeInTheDocument()
   })
 
+  it('shows the KK phonetics on the question card', async () => {
+    const user = setupUser()
+    render(<ExamPage progress={{}} onAnswer={() => {}} />)
+
+    fireEvent.change(screen.getByRole('slider'), { target: { value: '10' } })
+    await user.click(screen.getByRole('button', { name: '開始挑戰' }))
+
+    const word = screen.getByTestId('exam-word').textContent!
+    expect(screen.getByText(`[${WORD_MAP.get(word)!.kk}]`)).toBeInTheDocument()
+  })
+
   it('celebrates a typed correct answer and adds score', async () => {
     const user = setupUser()
     render(<ExamPage progress={{}} onAnswer={() => {}} />)

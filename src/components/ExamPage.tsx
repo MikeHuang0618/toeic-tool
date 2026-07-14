@@ -227,6 +227,7 @@ export function ExamPage({ progress, onAnswer }: ExamPageProps) {
         <span className="word-text" data-testid="exam-word">
           {currentWord}
         </span>
+        {entry.kk && <span className="word-kk">[{entry.kk}]</span>}
       </div>
 
       <form className="answer-form" onSubmit={confirm}>

@@ -24,6 +24,11 @@ describe('word data', () => {
     }
   })
 
+  it('has non-empty KK phonetics on every entry', () => {
+    const missing = WORDS.filter((entry) => !entry.kk || entry.kk.trim() === '')
+    expect(missing.map((entry) => entry.word)).toEqual([])
+  })
+
   it('is sorted A to Z', () => {
     for (let i = 1; i < WORDS.length; i++) {
       expect(

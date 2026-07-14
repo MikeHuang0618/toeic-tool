@@ -18,6 +18,13 @@ describe('DictionaryPage', () => {
     expect(screen.getByText(/accountant/)).toBeInTheDocument()
   })
 
+  it('shows the KK phonetics for each entry', async () => {
+    const user = userEvent.setup()
+    render(<DictionaryPage progress={{}} />)
+    await user.type(screen.getByRole('searchbox'), 'abandon')
+    expect(screen.getByText('[əˈbændən]')).toBeInTheDocument()
+  })
+
   it('shows an empty state when nothing matches', async () => {
     const user = userEvent.setup()
     render(<DictionaryPage progress={{}} />)

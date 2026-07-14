@@ -34,6 +34,12 @@ describe('PracticePage answer input', () => {
     expect(screen.queryByRole('button', { name: '記得' })).not.toBeInTheDocument()
   })
 
+  it('shows the KK phonetics on the word card', () => {
+    setup()
+    const word = screen.getByTestId('practice-word').textContent!
+    expect(screen.getByText(`[${WORD_MAP.get(word)!.kk}]`)).toBeInTheDocument()
+  })
+
   it('disables 確認 while the input is empty', async () => {
     const { user } = setup()
     expect(confirmBtn()).toBeDisabled()

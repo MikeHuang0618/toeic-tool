@@ -176,6 +176,12 @@ button {
   overflow-wrap: anywhere;
 }
 
+.word-kk {
+  font-size: 16px;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+}
+
 .word-zh {
   font-size: 20px;
   line-height: 1.5;
@@ -479,6 +485,12 @@ button {
   font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
+}
+
+.dict-kk {
+  font-size: 13px;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
 }
 
 .dict-zh {
