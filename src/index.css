@@ -231,6 +231,173 @@ button {
   transform: scale(0.98);
 }
 
+.answer-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.answer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.answer-form .answer-row {
+  margin-top: 0;
+}
+
+.answer-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1.5px solid var(--separator);
+  border-radius: 18px;
+  background: var(--card);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 17px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.answer-input:focus {
+  border-color: var(--accent);
+}
+
+.answer-input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* ---------- 作答回饋動畫 ---------- */
+
+.practice,
+.exam-playing {
+  position: relative;
+}
+
+.answer-feedback {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.feedback-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+  max-width: 100%;
+  padding: 28px 32px;
+  border-radius: 26px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  animation: feedbackIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.answer-feedback.wrong .feedback-card {
+  animation: feedbackIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both,
+    sadShake 0.5s ease 0.25s;
+}
+
+.feedback-emoji {
+  font-size: 52px;
+  line-height: 1.1;
+}
+
+.answer-feedback.correct .feedback-emoji {
+  animation: cheerBounce 0.7s cubic-bezier(0.3, 1.4, 0.4, 1) 0.1s both;
+}
+
+.answer-feedback.wrong .feedback-emoji {
+  animation: sadDroop 0.9s ease 0.15s both;
+}
+
+.feedback-title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.answer-feedback.correct .feedback-title {
+  color: var(--green);
+}
+
+.answer-feedback.wrong .feedback-title {
+  color: var(--red);
+}
+
+.feedback-answer {
+  font-size: 17px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.feedback-confetti {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  pointer-events: none;
+}
+
+.feedback-confetti i {
+  position: absolute;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  background: hsl(calc(var(--i) * 36), 90%, 60%);
+  transform: rotate(calc(var(--i) * 36deg));
+  animation: confettiBurst 0.9s cubic-bezier(0.1, 0.8, 0.4, 1) 0.12s both;
+}
+
+@keyframes feedbackIn {
+  0% { opacity: 0; transform: scale(0.7) translateY(16px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes cheerBounce {
+  0% { transform: scale(0.4) rotate(-16deg); }
+  45% { transform: scale(1.35) rotate(8deg); }
+  70% { transform: scale(0.92) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes confettiBurst {
+  0% {
+    opacity: 1;
+    transform: rotate(calc(var(--i) * 36deg)) translateY(0) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 36deg + 120deg)) translateY(-90px) scale(1);
+  }
+}
+
+@keyframes sadDroop {
+  0% { transform: translateY(-8px) scale(0.8); }
+  60% { transform: translateY(4px) scale(1.05); }
+  100% { transform: translateY(2px) scale(1); }
+}
+
+@keyframes sadShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-7px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-card,
+  .answer-feedback .feedback-emoji,
+  .feedback-confetti i {
+    animation: none;
+  }
+}
+
 /* ---------- 字典頁 ---------- */
 
 .dict-search-wrap {
